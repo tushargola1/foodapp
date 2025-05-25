@@ -4,7 +4,7 @@
     "slug": "foodapp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/logo.png",
+    "icon": "./assets/logo1.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -16,13 +16,18 @@
     },
     "android": {
       "adaptiveIcon": {
-       
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.the_prajapati1.foodapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a2e10840-5894-492b-9bc0-83246149e192"
+      }
     }
   }
 }

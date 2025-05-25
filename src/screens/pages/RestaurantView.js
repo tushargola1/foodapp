@@ -7,16 +7,22 @@ import {
   Image,
   StyleSheet,
   Dimensions,
+  FlatList,
+  Alert,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { COLORS } from "../../styles/Theme";
+import { COLORS, foodData } from "../../styles/Theme";
 import RestaurantModal from "../../Modals/RestaurantModal";
+import KeywordUi, { renderKeyword } from "../../component/KeywordUi";
+import FoodCard from "../../component/FoodCard";
+import ImageCarousel from "../../component/ImageCarousel";
 
-const HEADER_EXPANDED_HEIGHT = 300;
+const HEADER_EXPANDED_HEIGHT = 400;
 const HEADER_COLLAPSED_HEIGHT = 100;
 
 const { width } = Dimensions.get("window");
@@ -25,28 +31,42 @@ export default function RestaurantView({ navigation, route }) {
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const [isModalVisible, setModalVisible] = React.useState(false);
+  const [isExpanded, setIsExpanded] = React.useState(false);
   const toggleModal = () => setModalVisible(!isModalVisible);
 
+  const toggleFaq = (index) => {
+    setIsExpanded(isExpanded === index ? null : index);
+  };
   const {
     name = "Restaurant Name",
-    image = "https://hips.hearstapps.com/hmg-prod/images/alpe-di-siusi-sunrise-with-sassolungo-or-langkofel-royalty-free-image-1623254127.jpg",
+    image = [
+      "https://hips.hearstapps.com/hmg-prod/images/alpe-di-siusi-sunrise-with-sassolungo-or-langkofel-royalty-free-image-1623254127.jpg",
+      "sdds",
+    ],
     rating = 4.3,
     delivery = "Free",
     time = "20 min",
-    description = "This is a sample restaurant description.",
+    description = "Maecenas sed diam eget risus varius blandit sit amet non magna. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.",
   } = route?.params || {};
 
-  const titles = [
-    "Pizza Calzone European",
-    "Spaghetti Bolognese Italian",
-    "Sushi Rolls Japanese",
-    "Tacos al Pastor Mexican",
-    "Butter Chicken Indian",
-    "Croissant French Bakery",
-    "Pad Thai Thai Street",
-    "Shawarma Middle Eastern",
+  const titles = ["Pizza Calzone European"];
+  const faqs = [
+    {
+      question: "What is React Native?",
+      answer:
+        "React Native is a JavaScript framework for writing real, natively rendering mobile apps for iOS and Android.",
+    },
+    {
+      question: "What is Expo?",
+      answer:
+        "Expo is a framework and a platform for universal React applications.",
+    },
+    {
+      question: "Can I use native code with Expo?",
+      answer:
+        "You can in the Bare workflow or with a custom development client.",
+    },
   ];
-
   const headerHeight = scrollY.interpolate({
     inputRange: [0, HEADER_EXPANDED_HEIGHT - HEADER_COLLAPSED_HEIGHT],
     outputRange: [HEADER_EXPANDED_HEIGHT, HEADER_COLLAPSED_HEIGHT],
@@ -66,13 +86,13 @@ export default function RestaurantView({ navigation, route }) {
   });
 
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <RestaurantModal visible={isModalVisible} onClose={toggleModal} />
 
       {/* Animated Sticky Header */}
       <Animated.View style={[styles.header, { height: headerHeight }]}>
         <Animated.View style={[{ opacity: headerControlsOpacity }]}>
-          <Image source={{ uri: image }} style={styles.headerImage} />
+          <ImageCarousel images={image} />
         </Animated.View>
 
         <Animated.View
@@ -109,9 +129,16 @@ export default function RestaurantView({ navigation, route }) {
 
       {/* Sticky Title (fades in when header collapses) */}
       <Animated.View
+        pointerEvents="box-none"
         style={[
           styles.stickyTitle,
-          { opacity: headerTitleOpacity, alignItems: "center", top: 35 , backgroundColor:"red" , height:"100%" },
+          {
+            opacity: headerTitleOpacity,
+            alignItems: "center",
+            top: 35,
+            backgroundColor: "transparent",
+            // height: "70",
+          },
           styles.headerControls,
         ]}
       >
@@ -145,11 +172,10 @@ export default function RestaurantView({ navigation, route }) {
           { useNativeDriver: false }
         )}
       >
-        <View style={{ margin: 20 }}>
+        <View style={{ marginHorizontal: 20 }}>
           <Text style={styles.title}>{name}</Text>
           <Text style={styles.description}>{description}</Text>
         </View>
-
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
             <FontAwesome name="star-o" size={20} color={COLORS.primary} />
@@ -173,18 +199,108 @@ export default function RestaurantView({ navigation, route }) {
           </View>
         </View>
 
-        {/* Demo sections */}
-        {titles.map((title, index) => (
-          <View key={index} style={{ margin: 20 }}>
-            <Text style={styles.sectionTitle}>{title}</Text>
-            <Text style={styles.description}>
-              Maecenas sed diam eget risus varius blandit sit amet non magna.
-              Integer posuere erat a ante.
-            </Text>
-          </View>
-        ))}
+        <View>
+          {faqs.map((item, index) => (
+            <View key={index} style={styles.faqContainer}>
+              <View style={styles.faqHeader}>
+                <Text
+                  onPress={() => toggleFaq(index)}
+                  style={styles.questionText}
+                >
+                  {item.question}
+                </Text>
+                <Pressable onPress={() => toggleFaq(index)}>
+                  <AntDesign
+                    name={isExpanded === index ? "caretup" : "caretdown"}
+                    size={18}
+                    color="black"
+                  />
+                </Pressable>
+              </View>
+              {isExpanded === index && (
+                <View>
+                  <View style={styles.answerBox}>
+                    <View style={{ flexDirection: "column", gap: 5, flex: 1 }}>
+                      <MaterialCommunityIcons
+                        name="square-circle"
+                        size={18}
+                        color="green"
+                      />
+                      <Text style={{ fontSize: 17, fontWeight: "bold" }}>
+                        Malai soya chap
+                      </Text>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 2,
+                        }}
+                      >
+                        <FontAwesome
+                          name="rupee"
+                          size={17}
+                          color="black"
+                          style={{ fontWeight: "bold" }}
+                        />
+                        <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+                          450
+                        </Text>
+                      </View>
+                      <Text style={{ fontSize: 15 }}>
+                        Lorem ipsum dolor sit amet consectetur, adipisicing
+                        elit.
+                      </Text>
+                    </View>
+                    <View
+                      style={{ width: 150, height: 150, position: "relative" }}
+                    >
+                      <Image
+                        source={{ uri: image[0] }}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          resizeMode: "cover",
+                          borderRadius: 20,
+                        }}
+                      />
+
+                      <View
+                        style={{
+                          position: "absolute",
+                          bottom: "-10",
+                          left: "50%",
+                          transform: [{ translateX: -50 }],
+                          backgroundColor: "rgba(196, 117, 117, 0.67)",
+                          paddingHorizontal: 20,
+                          paddingVertical: 6,
+                          borderRadius: 10,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 6,
+                          borderWidth: 1,
+                          borderColor: COLORS.primary,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: "white",
+                            fontWeight: "bold",
+                            fontSize: 16,
+                          }}
+                        >
+                          Add
+                        </Text>
+                        <AntDesign name="plus" size={16} color="white" />
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              )}
+            </View>
+          ))}
+        </View>
       </Animated.ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -233,7 +349,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 70,
-    justifyContent: "center", // Vertically center text
+    justifyContent: "center",
     zIndex: 99,
   },
   stickyTitleText: {
@@ -255,7 +371,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    marginVertical: 15,
   },
   statItem: {
     flexDirection: "row",
@@ -268,8 +384,41 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 8,
+    fontWeight: "500",
     textTransform: "capitalize",
+  },
+  faqContainer: {
+    backgroundColor: "whitesmoke",
+    marginBottom: 10,
+    borderRadius: 8,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+  },
+  faqHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  questionText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    flex: 1,
+    paddingRight: 10,
+  },
+  answerBox: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderBottomWidth: 1,
+    borderBottomColor: "black",
+    borderStyle: "dashed",
+    paddingVertical: 30,
+    flex: 1,
+  },
+  answerText: {
+    fontSize: 14,
+    color: "#444",
+  },
+  plusIcon: {
+    fontWeight: "bold",
   },
 });
