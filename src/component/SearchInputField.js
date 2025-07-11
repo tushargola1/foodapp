@@ -63,8 +63,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 10,
     alignItems: "center",
-    marginTop: 10,
-    marginBottom: 20,
+    // marginTop: 10,
+    // marginBottom: 20,
   },
   searchIcon: {
     marginRight: 10,

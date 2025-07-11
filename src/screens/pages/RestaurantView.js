@@ -9,6 +9,7 @@ import {
   Dimensions,
   FlatList,
   Alert,
+  ScrollView,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -21,7 +22,8 @@ import RestaurantModal from "../../Modals/RestaurantModal";
 import KeywordUi, { renderKeyword } from "../../component/KeywordUi";
 import FoodCard from "../../component/FoodCard";
 import ImageCarousel from "../../component/ImageCarousel";
-
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import SearchInputField from "../../component/SearchInputField";
 const HEADER_EXPANDED_HEIGHT = 400;
 const HEADER_COLLAPSED_HEIGHT = 100;
 
@@ -46,7 +48,7 @@ export default function RestaurantView({ navigation, route }) {
     rating = 4.3,
     delivery = "Free",
     time = "20 min",
-    description = "Maecenas sed diam eget risus varius blandit sit amet non magna. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.",
+    description = "Maecenas sed diam eget risus varius blandit sit amet non magna. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.Maecenas sed diam eget risus varius blandit sit amet non magna.",
   } = route?.params || {};
 
   const titles = ["Pizza Calzone European"];
@@ -86,11 +88,16 @@ export default function RestaurantView({ navigation, route }) {
   });
 
   return (
-    <SafeAreaView SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <RestaurantModal visible={isModalVisible} onClose={toggleModal} />
 
       {/* Animated Sticky Header */}
-      <Animated.View style={[styles.header, { height: headerHeight }]}>
+      <Animated.View
+        style={[
+          styles.header,
+          { height: headerHeight, backgroundColor: "white" },
+        ]}
+      >
         <Animated.View style={[{ opacity: headerControlsOpacity }]}>
           <ImageCarousel images={image} />
         </Animated.View>
@@ -119,7 +126,6 @@ export default function RestaurantView({ navigation, route }) {
           </Pressable>
         </Animated.View>
 
-        {/* Floating heart icon */}
         <Animated.View
           style={[styles.heartIcon, { opacity: headerControlsOpacity }]}
         >
@@ -300,6 +306,81 @@ export default function RestaurantView({ navigation, route }) {
           ))}
         </View>
       </Animated.ScrollView>
+      <View
+        style={{
+          backgroundColor: COLORS.white,
+          position: "absolute",
+          bottom: "0",
+          zIndex: 1000,
+          width: "100%",
+          paddingVertical: 10,
+          paddingHorizontal: 10,
+          flexDirection: "row",
+          alignItems: "center",
+          // justifyContent:"space-between",
+          gap: 15,
+        }}
+      >
+        <View style={{ flex: 1 }}>
+          <SearchInputField />
+        </View>
+        <View
+          style={{
+            flex: 1 / 4,
+            backgroundColor: "black",
+            borderRadius: 10,
+            padding: 10,
+            flexDirection: "row",
+            gap: 5,
+            alignItems: "center",
+            position: "relative",
+            justifyContent: "space-between",
+          }}
+        >
+          <MaterialCommunityIcons
+            name="silverware-fork-knife"
+            size={18}
+            color="white"
+          />
+          <Text style={{ color: COLORS.white, fontSize: 15 }}>Menu</Text>
+          <View
+            style={{
+              position: "absolute",
+              right: 3,
+              bottom: 60,
+              backgroundColor: "red",
+              borderRadius: 10,
+              padding: 10,
+              width: 300,
+              maxHeight: 300,
+              zIndex: 1000,
+            }}
+          >
+            <ScrollView
+              style={{ width: "100%" }}
+              contentContainerStyle={{ paddingBottom: 10 }}
+              showsVerticalScrollIndicator={true}
+            >
+              {Array.from({ length: 20 }).map((_, index) => (
+                <View
+                  key={index}
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginBottom: 10,
+                    backgroundColor: "white",
+                    padding: 10,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text style={{ fontSize: 18 }}>hello</Text>
+                  <Text style={{ fontSize: 18 }}>02</Text>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
